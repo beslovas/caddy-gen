@@ -24,12 +24,12 @@ BREAKING CHANGES since [version 0.3.0](https://github.com/wemake-services/caddy-
 
 Options to configure:
 
-- `virtual.host` domain name, don't pass `http://` or `https://`, you can separate them with space,
-- `virtual.alias` domain alias, e.q. `www` prefix,
-- `virtual.port` port exposed by container, e.g. `3000` for React apps in development,
-- `virtual.tls-email` the email address to use for the ACME account managing the site's certificates,
-- `virtual.auth.username` and
-- `virtual.auth.password` together provide HTTP basic authentication.
+- `caddy.host` domain name, don't pass `http://` or `https://`, you can separate them with space,
+- `caddy.alias` domain alias, e.q. `www` prefix,
+- `caddy.port` port exposed by container, e.g. `3000` for React apps in development,
+- `caddy.tls.email` the email address to use for the ACME account managing the site's certificates,
+- `caddy.auth.username` and
+- `caddy.auth.password` together provide HTTP basic authentication.
 
 Password should be a string `base64` encoded from `bcrypt` hash. You can use https://bcrypt-generator.com/ with default config and https://www.base64encode.org/.
 
@@ -67,12 +67,12 @@ services:
   whoami: # this is your service
     image: "katacoda/docker-http-server:v2"
     labels:
-      - "virtual.host=myapp.com" # your domain
-      - "virtual.alias=www.myapp.com" # alias for your domain (optional)
-      - "virtual.port=80" # exposed port of this container
-      - "virtual.tls-email=admin@myapp.com" # ssl is now on
-      - "virtual.auth.username=admin" # Optionally add http basic authentication
-      - "virtual.auth.password=JDJ5JDEyJEJCdzJYM0pZaWtMUTR4UVBjTnRoUmVJeXQuOC84QTdMNi9ONnNlbDVRcHltbjV3ME1pd2pLCg==" # By specifying both username and password hash
+      - "caddy.host=myapp.com" # your domain
+      - "caddy.alias=www.myapp.com" # alias for your domain (optional)
+      - "caddy.port=80" # exposed port of this container
+      - "caddy.tls.email=admin@myapp.com" # ssl is now on
+      - "caddy.auth.username=admin" # Optionally add http basic authentication
+      - "caddy.auth.password=JDJ5JDEyJEJCdzJYM0pZaWtMUTR4UVBjTnRoUmVJeXQuOC84QTdMNi9ONnNlbDVRcHltbjV3ME1pd2pLCg==" # By specifying both username and password hash
 ```
 
 Or see [`docker-compose.yml`](https://github.com/wemake-services/caddy-gen/blob/master/docker-compose.yml) example file.
@@ -82,18 +82,18 @@ Or see [`docker-compose.yml`](https://github.com/wemake-services/caddy-gen/blob/
 `caddy-gen` is configured with [`labels`](https://docs.docker.com/engine/userguide/labels-custom-metadata/).
 
 The main idea is simple.
-Every labeled service exposes a `virtual.host` to be handled.
+Every labeled service exposes a `caddy.host` to be handled.
 Then, every container represents a single `upstream` to serve requests.
 
 There are several options to configure:
 
-- `virtual.host` is basically a domain name, see [`Caddy` docs](https://caddyserver.com/docs/proxy)
-- `virtual.alias` (optional) domain alias, useful for `www` prefix with redirect. For example `www.myapp.com`. Alias will always redirect to the host above.
-- `virtual.port` exposed port of the container
-- `virtual.tls-email` could be empty, unset or set to [valid email](https://caddyserver.com/docs/caddyfile/directives/tls)
-- `virtual.tls` (alias of `virtual.tls-email`) could be empty, unset or set to a [valid set of tls directive value(s)](https://caddyserver.com/docs/caddyfile/directives/tls)
-- `virtual.auth.username` when set, along with `virtual.auth.password`, http basic authentication is enabled
-- `virtual.auth.password` needs to be specified, along with `virtual.auth.usernmae`, to enable http basic authentication
+- `caddy.host` is basically a domain name, see [`Caddy` docs](https://caddyserver.com/docs/proxy)
+- `caddy.alias` (optional) domain alias, useful for `www` prefix with redirect. For example `www.myapp.com`. Alias will always redirect to the host above.
+- `caddy.port` exposed port of the container
+- `caddy.tls.email` could be empty, unset or set to [valid email](https://caddyserver.com/docs/caddyfile/directives/tls)
+- `caddy.tls` (alias of `caddy.tls.email`) could be empty, unset or set to a [valid set of tls directive value(s)](https://caddyserver.com/docs/caddyfile/directives/tls)
+- `caddy.auth.username` when set, along with `caddy.auth.password`, http basic authentication is enabled
+- `caddy.auth.password` needs to be specified, along with `caddy.auth.usernmae`, to enable http basic authentication
 
 Note, that options should not differ for containers of a single service.
 

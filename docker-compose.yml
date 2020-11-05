@@ -13,16 +13,19 @@ services:
     depends_on:
       - whoami
       - whoami2
+    labels:
+      - "caddy.global=on_demand_tls { ask http://0.0.0.0 }"
 
   whoami:
     image: "katacoda/docker-http-server:v1"
     labels:
-      - "virtual.host=test1.localhost"
+      - "caddy.host=test1.localhost"
 
   whoami2:
     image: "katacoda/docker-http-server:v2"
     labels:
-      - "virtual.host=myapp.com" # your domain
-      - "virtual.alias=www.myapp.com" # alias for your domain (optional)
-      - "virtual.port=80" # exposed port of this container
-      - "virtual.tls-email=admin@myapp.com" # ssl is now on
+      - "caddy.host=local" # your domain
+      # - "caddy.alias=www.myapp.com" # alias for your domain (optional)
+      - "caddy.port=80" # exposed port of this container
+      - "caddy.tls.email=admin@myapp.com" # ssl is now on
+      - 'caddy.tls.config=on_demand'

@@ -1,4 +1,13 @@
-{{ $hosts := groupByLabel $ "virtual.host" }}
+{{ $globalConfig := groupByLabel $ "caddy.global" }}
+{{ if $globalConfig }}
+{
+{{ range $conf, $containers := $globalConfig }}
+  {{ $conf }}
+{{ end }}  
+}
+{{ end }}
+
+{{ $hosts := groupByLabel $ "caddy.host" }}
 
 {{ if not $hosts }}
 
@@ -12,17 +21,17 @@ log {
 
 {{ range $h, $containers := $hosts }}
 {{ $c := first $containers }}
-{{ $allhosts := trim (index $c.Labels "virtual.host") }}
+{{ $allhosts := trim (index $c.Labels "caddy.host") }}
 {{ range $t, $host := split $allhosts " " }}
-{{ $tlsEmail := trim (index $c.Labels "virtual.tls-email") }}
-{{ $tlsConfig := trim (index $c.Labels "virtual.tls") }}
+{{ $tlsEmail := trim (index $c.Labels "caddy.tls.email") }}
+{{ $tlsConfig := trim (index $c.Labels "caddy.tls.config") }}
 {{ $tlsEnv := or $tlsEmail $tlsConfig }}
 {{ $tlsOff := eq $tlsEnv "" }}
 {{ $tlsOn := ne $tlsEnv "" }}
-{{ $alias := trim (index $c.Labels "virtual.alias") }}
+{{ $alias := trim (index $c.Labels "caddy.alias") }}
 {{ $aliasPresent := ne $alias "" }}
-{{ $authUsername := trim (index $c.Labels "virtual.auth.username") }}
-{{ $authPassword := trim (index $c.Labels "virtual.auth.password") }}
+{{ $authUsername := trim (index $c.Labels "caddy.auth.username") }}
+{{ $authPassword := trim (index $c.Labels "caddy.auth.password") }}
 {{ $basicauth := and (ne $authUsername "") (ne $authPassword "") }}
 
 {{ if $aliasPresent  }}
@@ -32,7 +41,9 @@ log {
 {{ end }}
 
 {{ if $tlsOff }}http://{{ end }}{{ $host }} {
-  {{ if $tlsOn }}tls {{ $tlsEnv }}{{ end }}
+  {{ if $tlsOn }}tls {{ if $tlsEmail }}{{ $tlsEmail }}{{ end }}{{ if $tlsConfig }} {
+    {{ $tlsConfig }} 
+  }{{ end }}{{ end }}
 
   {{ if $basicauth }}
   basicauth / {
@@ -43,7 +54,7 @@ log {
     lb_policy round_robin
     {{ range $i, $container := $containers }}
     {{ range $j, $net := $container.Networks }}
-    {{ $port := index $container.Labels "virtual.port" }}
+    {{ $port := index $container.Labels "caddy.port" }}
     to {{ $net.IP }}:{{ if $port }}{{ trim $port }}{{ else }}80{{ end }}
     {{ end }}
     {{ end }}
