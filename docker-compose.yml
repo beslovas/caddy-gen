@@ -14,7 +14,8 @@ services:
       - whoami
       - whoami2
     labels:
-      - "caddy.global=on_demand_tls { ask http://0.0.0.0 }"
+      - "caddy.global=on_demand_tls { ask {host} }"
+      - "caddy.global.tls.email=admin@myapp.com"
 
   whoami:
     image: "katacoda/docker-http-server:v1"

@@ -55,7 +55,7 @@ log {
     {{ range $i, $container := $containers }}
     {{ range $j, $net := $container.Networks }}
     {{ $port := index $container.Labels "caddy.port" }}
-    to {{ $net.IP }}:{{ if $port }}{{ trim $port }}{{ else }}80{{ end }}
+    to {{ or $net.IP $container.Hostname }}:{{ if $port }}{{ trim $port }}{{ else }}80{{ end }}
     {{ end }}
     {{ end }}
   }
