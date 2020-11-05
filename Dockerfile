@@ -3,7 +3,6 @@ FROM caddy:2.1.1-alpine
 ARG DOCKER_GEN_VERSION="0.7.4"
 ARG FOREGO_VERSION="0.16.1"
 
-
 ENV CADDYPATH="/etc/caddy"
 ENV DOCKER_HOST="unix:///tmp/docker.sock"
 
