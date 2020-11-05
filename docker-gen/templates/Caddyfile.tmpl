@@ -40,7 +40,7 @@ log {
 }
 {{ end }}
 
-{{ if $tlsOff }}http://{{ end }}{{ $host }} {
+{{ $host }} {
   {{ if $tlsOn }}tls {{ if $tlsEmail }}{{ $tlsEmail }}{{ end }}{{ if $tlsConfig }} {
     {{ $tlsConfig }} 
   }{{ end }}{{ end }}
